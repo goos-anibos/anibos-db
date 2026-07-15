@@ -1,0 +1,14 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=anibos
+      - DB_USER=anibos
+      - DB_PASS=anibospass
+      - ANIBOS_DATABASE_NAME=anibos
+    volumes:
+      - ./data/db:/pg/data
