@@ -1,0 +1,32 @@
+#!/bin/bash
+
+DBHOST=$(grep "host.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBUSER=$(grep "user.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBPASS=$(grep "pass.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBPORT=$(grep "port.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBNAME=$(grep "database.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP DATABASE $DBNAME;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE \"ANONYMOUS_USERS\";"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE \"LOGGED_IN_USERS\";"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE anonymous;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE geoserver;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE geoserver;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE geoserver_dev;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE geoserver_owners;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE geoserver_users;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE erddap;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE satnrt;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE satnrt_dev;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE satnrt_owners;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE satnrt_users;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE anibos;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE anibos_dev;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE anibos_owners;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE anibos_users;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "DROP ROLE $DBUSER;"
+psql -h $DBHOST -U postgres -p $DBPORT -c "CREATE ROLE $DBUSER WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN NOREPLICATION PASSWORD '$DBPASS' VALID UNTIL 'infinity';"
+psql -h $DBHOST -U postgres -p $DBPORT -c "CREATE DATABASE $DBNAME OWNER $DBUSER;"
+
+nomad init
+nomad apply -a

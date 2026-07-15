@@ -1,0 +1,18 @@
+--
+-- PostgreSQL Create satnrt (QCed satellite locations by Space State Model https://github.com/ianjonsen/ArgosQC) Schema
+--
+
+-- June 30, 2026 --
+
+CREATE SCHEMA IF NOT EXISTS satnrt;
+
+CREATE ROLE satnrt WITH LOGIN PASSWORD 'satnrtpass';
+CREATE ROLE satnrt_dev;
+CREATE ROLE satnrt_owners;
+CREATE ROLE satnrt_users;
+
+GRANT ALL PRIVILEGES ON SCHEMA satnrt TO satnrt;
+GRANT ALL PRIVILEGES ON SCHEMA satnrt TO satnrt_dev;
+GRANT ALL PRIVILEGES ON SCHEMA satnrt TO satnrt_owners;
+GRANT USAGE ON SCHEMA satnrt TO satnrt_users;
+

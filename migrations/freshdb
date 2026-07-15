@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DBHOST=$(grep "host.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBUSER=$(grep "user.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBPASS=$(grep "pass.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBPORT=$(grep "port.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+DBNAME=$(grep "database.*=" ./nomad.ini | awk -F= '{ print $2}' | xargs)
+
+echo "Stopping DB..."
+docker stop anibos-db-testing
+
+echo "Removing DB..."
+docker rm anibos-db-testing
+
+echo "Starting a new DB..."
+docker run -d --name anibos-db-testing -e POSTGRES_PASSWORD=password -p $DBPORT:5432 mdillon/postgis:9.5
+
+sleep 20
+
+psql -h $DBHOST -U postgres -p $DBPORT -c "CREATE ROLE $DBUSER WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN NOREPLICATION PASSWORD '$DBPASS' VALID UNTIL 'infinity';"
+psql -h $DBHOST -U postgres -p $DBPORT -c "CREATE DATABASE $DBNAME OWNER $DBUSER;"
+
+nomad init
+nomad apply -a
