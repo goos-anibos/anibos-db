@@ -32,7 +32,7 @@ Schemas:
 ## Related files
 
 anibos-db/
-├── Dockerfile_SAT       # Builds the TimescaleDB + Python + Nomad environment
+├── Dockerfile           # Builds the TimescaleDB + Python + Nomad environment
 ├── docker-compose.yml   # Orchestrates the container lifecycle
 ├── requirements.txt     # Python dependencies (Nomad, SQLAlchemy, etc.)
 ├── bootstrap.sh         # Initialization script run on first container start
@@ -46,7 +46,7 @@ anibos-db/
 
 1. **Clone the repository**:
    ```bash
-   git clone TBD
+   git clone git@github.com:goos-anibos/anibos-db.git
    cd anibos-db
    
 2. **Build and run the `otnsat` docker image 
