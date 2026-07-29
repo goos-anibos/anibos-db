@@ -15,6 +15,7 @@ Schemas:
 
 - **PostgreSQL 14** with **TimescaleDB** (for time-series optimization).
 - **PostGIS** (for geospatial queries).
+- **Note:** the official Docker Hub timescale/timescaledb-postgis is out of maintenance. Using alternative Hub.
 - **Nomad** (the migration tool) pre-installed inside a Python virtual environment.
 - `bootstrap.sh` runs the database migrations after Docker container after startup.
 

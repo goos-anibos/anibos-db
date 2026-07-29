@@ -1,5 +1,5 @@
 # Use the official TimescaleDB image (Alpine-based, includes PostGIS)
-FROM timescale/timescaledb:2.11.0-pg14 AS database
+FROM ngosang/timescaledb-postgis:2.13.0-pg14-postgis3.4 AS database
 
 # Set locale via environment variables (no need to generate)
 ENV LANG=en_US.UTF-8 \
@@ -10,7 +10,6 @@ ENV LANG=en_US.UTF-8 \
 RUN apk add --no-cache git curl python3 python3-dev
 RUN apk add --no-cache py3-pip libc-dev
 RUN apk add --no-cache build-base postgresql-dev
-RUN apk add --no-cache postgis
 
 # Install uv (as you wanted)
 RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/opt/uv" sh
