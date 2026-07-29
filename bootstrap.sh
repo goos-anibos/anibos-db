@@ -29,6 +29,7 @@ fi
 chown postgres:postgres "$PGDATA/pg_hba.conf"
 chmod 600 "$PGDATA/pg_hba.conf"
 
+# postgresql.conf
 if [ -f /postgresql.conf ]; then
     cp /postgresql.conf "$PGDATA/postgresql.conf"
     chown postgres:postgres "$PGDATA/postgresql.conf"
@@ -51,6 +52,17 @@ psql -U postgres <<-EOSQL
     WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$ANIBOS_DATABASE_NAME')\gexec
 EOSQL
 
+# ==========================================
+# ENABLE POSTGIS EXTENSIONS
+# ==========================================
+echo "Enabling PostGIS extensions..."
+psql -U $DB_USER -d $ANIBOS_DATABASE_NAME <<-EOSQL
+    -- Create extensions
+    CREATE EXTENSION IF NOT EXISTS postgis;
+    CREATE EXTENSION IF NOT EXISTS postgis_topology;
+    SELECT PostGIS_Version();
+EOSQL
+
 # Create nomad configuration
 cat > /migrations/nomad.ini <<EOL
 [nomad]
@@ -65,7 +77,6 @@ port = 5432
 database = ${ANIBOS_DATABASE_NAME}
 EOL
 
-# Fix Python import issue before running migrations
 python3 -c "
 import collections
 from collections.abc import Callable
