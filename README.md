@@ -51,6 +51,7 @@ anibos-db/
    cd anibos-db
 
 2. Ensure Docker service is running on your OS.
+
 3. **Build and run the `anibos-db` docker image
    ```bash
     docker compose build --no-cache
@@ -63,6 +64,23 @@ anibos-db/
    ```bash
        docker compose up
   - Expected output
+
+4. Verify created schema from DBeaver (on the host machine of the `anibos-db` container):
+   - Create a PostgreSQL connection 
+      - Host: localhost
+      - Port: 5432
+      - Database: `anibos`
+      - User: `anibos`
+      - Password: `anibospass`
+      - Set the connection name as: `local-anibos-db`
+    
+   - Browse `local-anibos-db`, should see schema: `anibos` and `satnrt` with empty tables.
+
+
+## Other Docker commands
+
+- Shutdown `anibos-db` Docker container: `docker compose down -v`
+- Clean up host resources: `Remove-Item -Recurse -Force .\data\db`
 
 
 # AniBOS Database Schema

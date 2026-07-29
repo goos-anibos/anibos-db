@@ -66,7 +66,7 @@ EOSQL
 echo "Waiting 20 seconds for extensions to initialize..."
 sleep 20
 
-# Create nomad configuration
+# Create nomad configuration: use internal URL instead of localhost:5432
 cat > /migrations/nomad.ini <<EOL
 [nomad]
 engine = sqla
