@@ -499,5 +499,5 @@ CREATE TABLE IF NOT EXISTS anibos.deployments (
     ),
     -- Foreign keys
     CONSTRAINT fk_deployments_animals FOREIGN KEY (animal_id) REFERENCES anibos.animals(animal_id),
-    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign) REFERENCES anibos.campaigns(project_id, campaign)
+    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign_id) REFERENCES anibos.campaigns(project_id, campaign_id)
 );
