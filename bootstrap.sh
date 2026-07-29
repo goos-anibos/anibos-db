@@ -66,17 +66,6 @@ EOSQL
 echo "Waiting 20 seconds for extensions to initialize..."
 sleep 20
 
-echo "Checking if anibos schema already exists..."
-SCHEMA_EXISTS=$(psql -U postgres -d $ANIBOS_DATABASE_NAME -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'anibos';" | tr -d ' ')
-
-if [ "$SCHEMA_EXISTS" = "1" ]; then
-    echo "anibos schema already exists. Skipping migrations."
-    echo "Bootstrap completed successfully!"
-    exit 0
-else
-    echo "anibos schema does not exist. Running migrations..."
-fi
-
 # Create nomad configuration: use internal URL instead of localhost:5432
 cat > /migrations/nomad.ini <<EOL
 [nomad]
