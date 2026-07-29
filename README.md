@@ -90,7 +90,7 @@ Normalized into project‑program‑deployment hierarchy.
 
 ---
 
-## Migration Process
+## Migration Process (runs as part of the Docker compose up)
 
 
 0. Roles
