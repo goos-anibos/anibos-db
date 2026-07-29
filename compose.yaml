@@ -6,14 +6,10 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=anibos
-      - POSTGRES_PASSWORD=anibospass
+      - POSTGRES_PASSWORD=postgresPass
       - POSTGRES_DB=anibos
       - DB_USER=anibos
       - DB_PASS=anibospass
       - ANIBOS_DATABASE_NAME=anibos
     volumes:
-      - pg_data:/var/lib/postgresql/data
-
-volumes:
-  pg_data:
+      - ./data/db:/pg/data
