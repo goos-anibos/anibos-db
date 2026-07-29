@@ -48,8 +48,9 @@ anibos-db/
    ```bash
    git clone git@github.com:goos-anibos/anibos-db.git
    cd anibos-db
-   
-2. **Build and run the `otnsat` docker image 
+
+2. Ensure Docker service is running on your OS.
+3. **Build and run the `anibos-db` docker image
    ```bash
     docker compose build --no-cache
 
