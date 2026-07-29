@@ -6,9 +6,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=pogres
-      - POSTGRES_PASSWORD=pogrespass
-      - POSTGRES_DB=pogres
+      - POSTGRES_USER=anibos
+      - POSTGRES_PASSWORD=anibospass
+      - POSTGRES_DB=anibos
       - DB_USER=anibos
       - DB_PASS=anibospass
       - ANIBOS_DATABASE_NAME=anibos
