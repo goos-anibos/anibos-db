@@ -4,15 +4,16 @@ services:
       context: .
       dockerfile: DockerFile
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
-      # PostgreSQL standard variables (REQUIRED for init)
-      - POSTGRES_PASSWORD=anibos
-      - POSTGRES_USER=anibos
-      - POSTGRES_DB=anibos
-      # Additional user
+      - POSTGRES_USER=pogres
+      - POSTGRES_PASSWORD=pogrespass
+      - POSTGRES_DB=pogres
       - DB_USER=anibos
       - DB_PASS=anibospass
       - ANIBOS_DATABASE_NAME=anibos
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
