@@ -63,11 +63,14 @@ psql -U $DB_USER -d $ANIBOS_DATABASE_NAME <<-EOSQL
     SELECT PostGIS_Version();
 EOSQL
 
+echo "Waiting 20 seconds for extensions to initialize..."
+sleep 20
+
 # Create nomad configuration
 cat > /migrations/nomad.ini <<EOL
 [nomad]
 engine = sqla
-url = postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${ANIBOS_DATABASE_NAME}
+url = postgresql://${DB_USER}:${DB_PASS}@/${ANIBOS_DATABASE_NAME}?host=/var/run/postgresql
 
 [anibos]
 host = localhost

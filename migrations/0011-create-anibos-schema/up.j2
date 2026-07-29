@@ -400,7 +400,7 @@ CREATE TABLE IF NOT EXISTS anibos.animals (
 
 CREATE TABLE IF NOT EXISTS anibos.campaigns (
     project_id               TEXT NOT NULL,   -- An identifier for the dataset, provided by and unique within its naming authority. The combination of the "naming authority" and the "id" should be globally unique, but the id can be globally unique by itself also. IDs can be URLs, URNs, DOIs, meaningful text strings, a local key, or any other unique string of characters. The id should not include white space characters.
-    campaign                 TEXT NOT NULL,
+    campaign_id              TEXT NOT NULL,
     naming_authority         TEXT NOT NULL,
     argos_program_number     TEXT,
     instrument_manufacturer  TEXT NOT NULL,
@@ -419,7 +419,7 @@ CREATE TABLE IF NOT EXISTS anibos.campaigns (
     date_created               TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_updated               TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- Composite primary key
-    CONSTRAINT campaigns_pkey PRIMARY KEY (project_id, campaign),
+    CONSTRAINT campaigns_pkey PRIMARY KEY (project_id, campaign_id),
     CONSTRAINT deployments_sea_name_ck CHECK (
     sea_name IN (
         'ARCTIC', 'E INDIAN', 'GLOBAL', 'GREAT LAKES', 'MEDITERRANEAN',
@@ -429,8 +429,8 @@ CREATE TABLE IF NOT EXISTS anibos.campaigns (
         )
     ),
     -- Foreign key to projects
-    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign)
-        REFERENCES anibos.campaigns(project_id, campaign)
+    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign_id)
+        REFERENCES anibos.campaigns(project_id, campaign_id)
 );
 
 
