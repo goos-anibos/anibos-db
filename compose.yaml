@@ -6,9 +6,13 @@ services:
     ports:
       - 5432:5432
     environment:
+      # PostgreSQL standard variables (REQUIRED for init)
       - POSTGRES_PASSWORD=anibos
+      - POSTGRES_USER=anibos
+      - POSTGRES_DB=anibos
+      # Additional user
       - DB_USER=anibos
       - DB_PASS=anibospass
       - ANIBOS_DATABASE_NAME=anibos
     volumes:
-      - ./data/db:/pg/data
+      - ./data/db:/var/lib/postgresql/data
