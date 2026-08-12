@@ -2,7 +2,7 @@
 -- PostgreSQL Create anibos Schema
 --
 
--- June 29, 2026 --
+-- August 12, 2026 --
 
 CREATE SCHEMA IF NOT EXISTS anibos;
 
@@ -335,12 +335,15 @@ CREATE TABLE IF NOT EXISTS anibos.projects (
     project_id              TEXT PRIMARY KEY,
     title                   TEXT NOT NULL,
     license                 TEXT NOT NULL,
-    gts_ingest              BOOLEAN NOT NULL DEFAULT FALSE, -- Global attribute that indicates if the data provider intends this to published on the GTS
+    conventions             TEXT NOT NULL,
+    wmo_platform_code       TEXT,
     project_name            TEXT,                   -- The name of the project(s) principally responsible for originating this data. Multiple projects can be separated by commas, as described under Attribute Content Guidelines. 
     uuid                    TEXT,                   -- Universally Unique Indentifier, 36 character string containing numbers, letters and dashes
     info_url                TEXT,                   -- URL for background information about this dataset. 
     summary                 TEXT,
     citation                TEXT,                   -- Murray, Kimberly; Hatch, Joshua; DiGiovanni, Robert. (2021). Gray seal (Halichoerus grypus) location data from a sateliite telemetry tag (ptt id 195533) deployed in the North Atlantic Ocean from 2020-01-30 to 2020-06-15, deployment id 5e32f4e46321be14905ea848. [Dataset]. US Integreated Ocean Observing System (IOOS) Animal Telemetry Network (ATN).
+    sea_name                 TEXT NOT NULL,
+    standard_name_vocab      TEXT NOT NULL,
     keywords                TEXT,
     keywords_vocabulary     TEXT,
     history                 TEXT,
@@ -348,11 +351,18 @@ CREATE TABLE IF NOT EXISTS anibos.projects (
     publisher_institutioncode_pk    TEXT REFERENCES anibos.institution_codes(institutioncode),
     publisher_contact_pk    TEXT REFERENCES anibos.contacts(contact_pk),
     date_created            TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_issued             TIMESTAMPTZ,
+    date_issued             TIMESTAMPTZ,       -- The date on which this data (including all modifications) was formally issued (i.e., made available to a wider audience). Note that these apply just to the data, not the metadata. 
     date_modified           TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_active               BOOLEAN DEFAULT TRUE,
     CONSTRAINT publisher_type_check CHECK (
         publisher_type IN ('person', 'group', 'institution', 'position')
+        ),
+    CONSTRAINT deployments_sea_name_ck CHECK (
+    sea_name IN (
+        'ARCTIC', 'E INDIAN', 'GLOBAL', 'GREAT LAKES', 'MEDITERRANEAN',
+        'MID PACIFIC', 'NE ATLANTIC', 'NE PACIFIC', 'NW ATLANTIC',
+        'NW PACIFIC', 'SE ATLANTIC', 'SE PACIFIC', 'SOUTHERN',
+        'SW ATLANTIC', 'SW PACIFIC', 'W INDIAN'
         )
 );
 -- ------------------------------------------------------------------
@@ -393,58 +403,26 @@ CREATE TABLE IF NOT EXISTS anibos.animals (
 );
 
 -- ------------------------------------------------------------------
--- 2.4 Create the campaigns table:
--- Each project_id and campaign have multiple deployments.
--- Deployments in one campaign share the same data provider (SMRU or WILDLIFECOMPUTERS), source, processing_level, qc_manual etc.
--- ------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS anibos.campaigns (
-    project_id               TEXT NOT NULL,   -- An identifier for the dataset, provided by and unique within its naming authority. The combination of the "naming authority" and the "id" should be globally unique, but the id can be globally unique by itself also. IDs can be URLs, URNs, DOIs, meaningful text strings, a local key, or any other unique string of characters. The id should not include white space characters.
-    campaign_id              TEXT NOT NULL,
-    naming_authority         TEXT NOT NULL,
-    argos_program_number     TEXT,
-    instrument_manufacturer  TEXT NOT NULL,
-    conventions              TEXT NOT NULL,
-    sea_name                 TEXT NOT NULL,
-    standard_name_vocab      TEXT NOT NULL,
-    instrument               TEXT NOT NULL DEFAULT 'satellite telemetry tag',
-    cdm_data_type            TEXT NOT NULL,
-    feature_type             TEXT NOT NULL,
-    data_mode                TEXT NOT NULL CHECK (data_mode IN ('real-time', 'near real-time', 'delayed-mode')),
-    processing_level         TEXT NOT NULL,
-    source                   TEXT NOT NULL,
-    qc_manual                TEXT,
-    date_issued              TIMESTAMPTZ,
-    -- Housekeeping
-    date_created               TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_updated               TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    -- Composite primary key
-    CONSTRAINT campaigns_pkey PRIMARY KEY (project_id, campaign_id),
-    CONSTRAINT deployments_sea_name_ck CHECK (
-    sea_name IN (
-        'ARCTIC', 'E INDIAN', 'GLOBAL', 'GREAT LAKES', 'MEDITERRANEAN',
-        'MID PACIFIC', 'NE ATLANTIC', 'NE PACIFIC', 'NW ATLANTIC',
-        'NW PACIFIC', 'SE ATLANTIC', 'SE PACIFIC', 'SOUTHERN',
-        'SW ATLANTIC', 'SW PACIFIC', 'W INDIAN'
-        )
-    ),
-    -- Foreign key to projects
-    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign_id)
-        REFERENCES anibos.campaigns(project_id, campaign_id)
-);
-
-
--- ------------------------------------------------------------------
--- 2.5 Create the deployments table
+-- 2.4 Create the deployments table
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS anibos.deployments (
     program                 TEXT NOT NULL,
     project_id              TEXT NOT NULL,
     campaign_id             TEXT,                    -- For SMRU e.g. ct123
+    argos_program_number    TEXT,
+    naming_authority        TEXT NOT NULL,
+    instrument_manufacturer TEXT NOT NULL,
     deployment_id           TEXT PRIMARY KEY,        -- e.g., '5e32f4e46321be14905ea848'
     animal_id               TEXT NOT NULL,
+    instrument              TEXT NOT NULL DEFAULT 'satellite telemetry tag',
+    cdm_data_type           TEXT NOT NULL,
+    feature_type            TEXT NOT NULL,
+    data_mode               TEXT NOT NULL CHECK (data_mode IN ('real-time', 'near real-time', 'delayed-mode')),
+    processing_level        TEXT NOT NULL,
+    source                  TEXT NOT NULL,
+    qc_manual               TEXT,
     wigos_station_identifier TEXT,
-    wmo_platform_code       TEXT,
+    gts_ingest              BOOLEAN NOT NULL DEFAULT FALSE, -- Global attribute that indicates if the data provider intends this to published on the GTS
     deployment_lat          NUMERIC NOT NULL,
     deployment_lon          NUMERIC NOT NULL,
     deployment_start        TIMESTAMPTZ NOT NULL,
@@ -499,5 +477,5 @@ CREATE TABLE IF NOT EXISTS anibos.deployments (
     ),
     -- Foreign keys
     CONSTRAINT fk_deployments_animals FOREIGN KEY (animal_id) REFERENCES anibos.animals(animal_id),
-    CONSTRAINT fk_deployments_campaign FOREIGN KEY (project_id, campaign_id) REFERENCES anibos.campaigns(project_id, campaign_id)
+    CONSTRAINT fk_deployments FOREIGN KEY (project_id) REFERENCES anibos.campaigns(project_id)
 );
